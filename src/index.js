@@ -1,16 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import List from "./List";
 
 import "./styles.css";
 
 function App() {
   return (
     <div className="App">
-      <h1>Todo-list</h1>
-      <form>
-        <input />
-        <button>Add</button>
-      </form>
+      <List />
     </div>
   );
 }
