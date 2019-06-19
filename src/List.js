@@ -48,7 +48,6 @@ class List extends React.Component {
       if (!parentElem.children) {
         parentElem.children = [];
       }
-      // parentElem.children.push(newElem);
       this.setState({ list });
     };
 
@@ -118,7 +117,7 @@ class List extends React.Component {
     }
   };
 
-  checkSublist = item => {
+  checkSublist = (item, index) => {
     if (!item.children) {
       return (
         <button
@@ -132,10 +131,45 @@ class List extends React.Component {
     }
   };
 
+  onMoveUp = index => {
+    if (index === 0) return;
+    const { list } = this.state;
+    const key = index - 1;
+    const listAbove = list[key];
+
+    list[index - 1] = list[index];
+    list[index] = listAbove;
+    this.setState({ list });
+  };
+
+  onMoveDown = index => {
+    const { list } = this.state;
+    if (index === list.length - 1) return;
+    const key = index + 1;
+    const itemBelow = list[key];
+    list[index + 1] = list[index];
+    list[index] = itemBelow;
+    this.setState({ list });
+  };
+
+  moveUpButton = index => {
+    if (index !== 0) {
+      return <button onClick={() => this.onMoveUp(index)}>Up</button>;
+    }
+  };
+
+  moveDownButton = index => {
+    if (index > 0) {
+      return <button onClick={() => this.onMoveDown(index)}>Down</button>;
+    }
+  };
+
   parseList = (item, index) => (
     <li key={index}>
       {item.title}
-      {this.checkSublist(item)}
+      {this.checkSublist(item, index)}
+      {this.moveUpButton(index)}
+      {this.moveDownButton(index)}
       <button
         type="button"
         className="remove"
