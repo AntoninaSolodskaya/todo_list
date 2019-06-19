@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 class List extends React.Component {
   state = {
@@ -27,48 +27,47 @@ class List extends React.Component {
       list: [...this.state.list, newElem],
       rootInput: ""
     });
-
-    console.log("newElem", newElem);
-    console.log("list", this.state.list);
   };
 
   addInnerElem = parentId => {
-    const title = this.state.innerInput;
     let list = [...this.state.list];
 
     const findElembyId = (arr, elemId, action) => {
       for (let i = 0; i < arr.length; i++) {
         if (arr[i].id === elemId) {
           action(arr[i]);
-          console.log("arr[i].id", arr[i].id);
-          console.log("elemId", elemId);
           break;
         }
         if (arr[i].children) {
           findElembyId(arr[i].children, elemId, action);
-          console.log(arr[i].children);
         }
       }
     };
 
-    const addElem = parentElem => {
-      const newElem = {
-        id: Date.now(),
-        title: title
-      };
-
-      console.log("newElem", newElem);
-
+    const addNewElem = parentElem => {
       if (!parentElem.children) {
         parentElem.children = [];
       }
-      parentElem.children.push(newElem);
+      // parentElem.children.push(newElem);
       this.setState({ list });
     };
 
-    console.log("parentId", parentId);
     console.log("list", this.state.list);
-    findElembyId(list, parentId, addElem);
+    findElembyId(list, parentId, addNewElem);
+  };
+
+  addElem = parentElem => {
+    const title = this.state.innerInput;
+
+    const newElem = {
+      id: Date.now(),
+      title: title
+    };
+
+    parentElem.children.push(newElem);
+    this.setState({
+      innerInput: ""
+    });
   };
 
   removeElem = id => {
@@ -98,16 +97,45 @@ class List extends React.Component {
     findParentElem(list, id, removeElemById);
   };
 
+  addChildInput = item => {
+    if (item.children) {
+      return (
+        <Fragment>
+          <input
+            type="text"
+            onChange={e => this.setInnerInput(e)}
+            value={this.state.innerInput}
+          />
+          <button
+            onClick={e => {
+              this.addElem(item);
+            }}
+          >
+            Add
+          </button>
+        </Fragment>
+      );
+    }
+  };
+
+  checkSublist = item => {
+    if (!item.children) {
+      return (
+        <button
+          type="button"
+          className="add"
+          onClick={() => this.addInnerElem(item.id)}
+        >
+          Add Sublist
+        </button>
+      );
+    }
+  };
+
   parseList = (item, index) => (
     <li key={index}>
       {item.title}
-      <button
-        type="button"
-        className="add"
-        onClick={() => this.addInnerElem(item.id)}
-      >
-        Add Sublist
-      </button>
+      {this.checkSublist(item)}
       <button
         type="button"
         className="remove"
@@ -115,15 +143,11 @@ class List extends React.Component {
       >
         Remove
       </button>
-      <div className="title-wrap">
-        <input
-          value={this.state.innerInput}
-          onChange={e => this.setInnerInput(e)}
-        />
-      </div>
-
-      {item.children && item.children.length > 0 && (
-        <ul>{item.children.map(this.parseList)}</ul>
+      {item.children && item.children.length >= 0 && (
+        <ul>
+          {this.addChildInput(item)}
+          {item.children.map(this.parseList)}
+        </ul>
       )}
     </li>
   );
