@@ -51,7 +51,6 @@ class List extends React.Component {
       this.setState({ list });
     };
 
-    console.log("list", this.state.list);
     findElembyId(list, parentId, addNewElem);
   };
 
@@ -67,33 +66,6 @@ class List extends React.Component {
     this.setState({
       innerInput: ""
     });
-  };
-
-  removeElem = id => {
-    let list = [...this.state.list];
-
-    const findParentElem = (arr, elemId, action) => {
-      if (arr.some(item => item.id === elemId)) {
-        action(arr);
-        console.log("action", arr);
-      } else {
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].children) {
-            findParentElem(arr[i].children, elemId, action);
-          }
-        }
-      }
-    };
-
-    const removeElemById = parentArr => {
-      const elem = parentArr.find(item => item.id === id);
-      const elemIndex = parentArr.indexOf(elem);
-
-      parentArr.splice(elemIndex, 1);
-      this.setState({ list });
-    };
-
-    findParentElem(list, id, removeElemById);
   };
 
   addChildInput = item => {
@@ -131,45 +103,71 @@ class List extends React.Component {
     }
   };
 
-  onMoveUp = index => {
-    if (index === 0) return;
-    const { list } = this.state;
-    const key = index - 1;
-    const listAbove = list[key];
-
-    list[index - 1] = list[index];
-    list[index] = listAbove;
-    this.setState({ list });
-  };
-
-  onMoveDown = index => {
-    const { list } = this.state;
-    if (index === list.length - 1) return;
-    const key = index + 1;
-    const itemBelow = list[key];
-    list[index + 1] = list[index];
-    list[index] = itemBelow;
-    this.setState({ list });
-  };
-
-  moveUpButton = index => {
-    if (index !== 0) {
-      return <button onClick={() => this.onMoveUp(index)}>Up</button>;
+  findParentElem = (arr, elemId, action) => {
+    if (arr.some(item => item.id === elemId)) {
+      action(arr);
+    } else {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].children) {
+          this.findParentElem(arr[i].children, elemId, action);
+        }
+      }
     }
   };
 
-  moveDownButton = index => {
-    if (index > 0) {
-      return <button onClick={() => this.onMoveDown(index)}>Down</button>;
-    }
+  removeElem = id => {
+    let list = [...this.state.list];
+
+    const removeElemById = parentArr => {
+      const elem = parentArr.find(item => item.id === id);
+      const elemIndex = parentArr.indexOf(elem);
+
+      parentArr.splice(elemIndex, 1);
+      this.setState({ list });
+    };
+
+    this.findParentElem(list, id, removeElemById);
+  };
+
+  moveElem = (id, isUp) => {
+    let list = [...this.state.list];
+
+    const moveElemById = parentArr => {
+      const elem = parentArr.find(item => item.id === id);
+      const elemIndex = parentArr.indexOf(elem);
+
+      if (elemIndex === 0 && isUp) return;
+      if (elemIndex === parentArr.length - 1 && !isUp) return;
+
+      parentArr.splice(elemIndex, 1);
+      const newIndex = isUp ? elemIndex - 1 : elemIndex + 1;
+
+      parentArr.splice(newIndex, 0, elem);
+
+      this.setState({ list });
+    };
+
+    this.findParentElem(list, id, moveElemById);
   };
 
   parseList = (item, index) => (
     <li key={index}>
       {item.title}
       {this.checkSublist(item, index)}
-      {this.moveUpButton(index)}
-      {this.moveDownButton(index)}
+      <button
+        type="button"
+        onClick={() => this.moveElem(item.id, true)}
+        className="move"
+      >
+        up
+      </button>
+      <button
+        type="button"
+        onClick={() => this.moveElem(item.id)}
+        className="move"
+      >
+        down
+      </button>
       <button
         type="button"
         className="remove"
