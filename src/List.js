@@ -154,20 +154,24 @@ class List extends React.Component {
     <li key={index}>
       {item.title}
       {this.checkSublist(item, index)}
-      <button
-        type="button"
-        onClick={() => this.moveElem(item.id, true)}
-        className="move"
-      >
-        up
-      </button>
-      <button
-        type="button"
-        onClick={() => this.moveElem(item.id)}
-        className="move"
-      >
-        down
-      </button>
+      {index !== 0 && (
+        <button
+          type="button"
+          onClick={() => this.moveElem(item.id, true)}
+          className="move"
+        >
+          up
+        </button>
+      )}
+      {index > 0 && (
+        <button
+          type="button"
+          onClick={() => this.moveElem(item.id)}
+          className="move"
+        >
+          down
+        </button>
+      )}
       <button
         type="button"
         className="remove"
