@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 
-class List extends React.Component {
+function List() {
   state = {
     list: [],
     rootInput: "",
@@ -24,13 +24,13 @@ class List extends React.Component {
     };
 
     this.setState({
-      list: [...this.state.list, newElem],
+      list: [...list, newElem],
       rootInput: ""
     });
   };
 
   addInnerElem = parentId => {
-    let list = [...this.state.list];
+    let list = [...list];
 
     const findElembyId = (arr, elemId, action) => {
       for (let i = 0; i < arr.length; i++) {
@@ -116,7 +116,7 @@ class List extends React.Component {
   };
 
   removeElem = id => {
-    let list = [...this.state.list];
+    let list = [...list];
 
     const removeElemById = parentArr => {
       const elem = parentArr.find(item => item.id === id);
@@ -130,7 +130,7 @@ class List extends React.Component {
   };
 
   moveElem = (id, isUp) => {
-    let list = [...this.state.list];
+    let list = [...list];
 
     const moveElemById = parentArr => {
       const elem = parentArr.find(item => item.id === id);
@@ -188,14 +188,11 @@ class List extends React.Component {
     </li>
   );
 
-  render() {
-    const { rootInput } = this.state;
-
     return (
       <div className="App">
         <div className="list-wrap">
-          {this.state.list.length > 0 && (
-            <ul>{this.state.list.map(this.parseList)}</ul>
+          {list.length > 0 && (
+            <ul>{list.map(this.parseList)}</ul>
           )}
         </div>
         <header className="App-header">
